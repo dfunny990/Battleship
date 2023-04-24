@@ -1,0 +1,56 @@
+          PlayerSetBoats();
+     }
+}
+
+struct Boat {
+  const char *name;
+  char id;
+  int size;
+};
+
+Boat boats[] = {
+  { "Aircraft Carrier", 'A', 5 },
+  { "Battleship", 'B', 4 },
+  { "Submarine", 'S', 3 },
+  { "Destroyer", 'D', 3 },
+  { "Patrol Boat", 'P', 2 },
+  { NULL, 0, 0 }
+};
+
+//AI Places each Boat
+void Player::AISetBoats(){
+  int idx=0;
+  Boat *boat;
+  while (boats[idx].name != NULL) {
+    boat = &boats[idx++];
+    AISetBoat(boat->id, boat->size);
+  }
+}
+
+//Player places each boat. I realize I could have optimized this a bit more.
+//I could have made a get coords function that would work with this and getTarget
+void Player::PlayerSetBoats(){
+     char tempx;
+     int x, y, d;
+     bool valid = false;
+     printFriendBoard();
+     cout<<"It's time to place your boats."<<endl;
+
+  int idx=0;
+  Boat *boat;
+  while (boats[idx].name != NULL) {
+    boat = &boats[idx];
+    cout << "Placing the " << boat->name;
+    cout << ", which has a length of " << boat->size << "." << endl;
+
+    x = placeX();
+    y = placeY();
+    d = placeD();
+    valid = checkAndSet(x, y, d, boat->id, boat->size);
+    if (valid) {
+      ++idx;
+    }
+  }
+}
+//The actual setting of the boats. I know this looks kind of ugly and complex too.
+void Player::AISetBoat(char type, int size){

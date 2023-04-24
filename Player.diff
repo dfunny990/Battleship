@@ -1,0 +1,107 @@
+--- Player.cpp	2014-07-31 11:01:21.141136982 -0500
++++ Player_optimized.cpp	2014-08-21 07:30:55.693136980 -0500
+@@ -64,14 +64,32 @@
+           PlayerSetBoats();
+      }
+ }
++
++struct Boat {
++  const char *name;
++  char id;
++  int size;
++};
++
++Boat boats[] = {
++  { "Aircraft Carrier", 'A', 5 },
++  { "Battleship", 'B', 4 },
++  { "Submarine", 'S', 3 },
++  { "Destroyer", 'D', 3 },
++  { "Patrol Boat", 'P', 2 },
++  { NULL, 0, 0 }
++};
++
+ //AI Places each Boat
+ void Player::AISetBoats(){
+-     AISetBoat('A', 5);
+-     AISetBoat('B', 4);
+-     AISetBoat('S', 3);
+-     AISetBoat('D', 3);
+-     AISetBoat('P', 2);
++  int idx=0;
++  Boat *boat;
++  while (boats[idx].name != NULL) {
++    boat = &boats[idx++];
++    AISetBoat(boat->id, boat->size);
++  }
+ }
++
+ //Player places each boat. I realize I could have optimized this a bit more.
+ //I could have made a get coords function that would work with this and getTarget
+ void Player::PlayerSetBoats(){
+@@ -80,50 +98,22 @@
+      bool valid = false;
+      printFriendBoard();
+      cout<<"It's time to place your boats."<<endl;
+-     while(!valid){
+-          cout<<"First is the Aircraft Carrier which has a length of 5."<<endl;
+-          x = placeX();
+-          y = placeY();
+-          d = placeD();
+-          valid = checkAndSet(x,y,d,'A',5);
+-     }
+-     printFriendBoard();
+-     valid = false;
+-     while(!valid){
+-          cout<<"Next is the Battleship which has a length of 4."<<endl;
+-          x = placeX();
+-          y = placeY();
+-          d = placeD();
+-          valid = checkAndSet(x,y,d,'B',4);
+-     }
+-     printFriendBoard();
+-     valid = false;
+-     while(!valid){
+-          cout<<"Next is the Submarine which has a length of 3."<<endl;
+-          x = placeX();
+-          y = placeY();
+-          d = placeD();
+-          valid = checkAndSet(x,y,d,'S',3);
+-     }
+-     printFriendBoard();
+-     valid = false;
+-     while(!valid){
+-          cout<<"Next is the Destroyer which has a length of 3."<<endl;
+-          x = placeX();
+-          y = placeY();
+-          d = placeD();
+-          valid = checkAndSet(x,y,d,'D',3);
+-     }
+-     printFriendBoard();
+-     valid = false;
+-     while(!valid){
+-          cout<<"Last is the Patrol Boat which has a length of 2."<<endl;
+-          x = placeX();
+-          y = placeY();
+-          d = placeD();
+-          valid = checkAndSet(x,y,d,'P',2);
+-     }
+-     valid = false;
++
++  int idx=0;
++  Boat *boat;
++  while (boats[idx].name != NULL) {
++    boat = &boats[idx];
++    cout << "Placing the " << boat->name;
++    cout << ", which has a length of " << boat->size << "." << endl;
++
++    x = placeX();
++    y = placeY();
++    d = placeD();
++    valid = checkAndSet(x, y, d, boat->id, boat->size);
++    if (valid) {
++      ++idx;
++    }
++  }
+ }
+ //The actual setting of the boats. I know this looks kind of ugly and complex too.
+ void Player::AISetBoat(char type, int size){
